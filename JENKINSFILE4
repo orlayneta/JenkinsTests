@@ -44,6 +44,12 @@ pipeline {
                         bat 'echo Running E2E tests on edge'
                     }
                 }  
+
+                 stage ('edge') {%%%
+                    steps {
+                        bat 'echo Running E2E tests on edge'
+                    }
+                }%%%%%%
             }
         }
         stage('Release to prod') {
