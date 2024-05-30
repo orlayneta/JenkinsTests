@@ -37,7 +37,13 @@ pipeline {
                     steps {
                         bat 'echo Running E2E tests on safari'
                     }
-                }   
+                }  
+
+                 stage ('edge') {
+                    steps {
+                        bat 'echo Running E2E tests on edge'
+                    }
+                }  
             }
         }
         stage('Release to prod') {
