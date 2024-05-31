@@ -19,9 +19,7 @@ pipeline {
         stage('deploy') {
             steps {
                 bat 'echo Deploying build'
-
-        
-        }
+               }
         stage('Regression tests') {
             parallel {
                 stage ('chrome') {
