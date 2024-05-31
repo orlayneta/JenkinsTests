@@ -21,7 +21,7 @@ pipeline {
                 bat 'echo Deploying build'
 
 
-                sh 'docker-compose -f docker-compose-yml up --bluid -d'
+                sh 'docker compose up -d'
 
 
 
