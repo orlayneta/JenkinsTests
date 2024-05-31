@@ -20,8 +20,11 @@ pipeline {
             steps {
                 bat 'echo Deploying build'
 
+                dir 'activemq/CVE-2015-5254'
 
-                sh ' docker-compose -f activemq/CVE-2015-5254/docker-compose.yml up --build -d'
+                sh 'docker compose up -d'
+                
+                sh ' docker-compose -f docker-compose.yml up --build -d'
 
                }
 
