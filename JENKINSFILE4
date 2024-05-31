@@ -31,8 +31,7 @@ pipeline {
                 bat 'echo Deploying build'
 
                 
-                dir 'activemq'
-                cd 'activemq'
+                sh 'docker-compose up -d'
 
                 
 
