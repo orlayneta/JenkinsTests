@@ -21,10 +21,7 @@ pipeline {
                 bat 'echo Deploying build'
 
 
-                sh 'git clone https://github.com/orlayneta/activemq.git'
-
-
-
+                sh ' docker-compose -f activemq/CVE-2015-5254/docker-compose.yml up --build -d'
 
                }
 
