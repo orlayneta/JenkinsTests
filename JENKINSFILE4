@@ -19,7 +19,19 @@ pipeline {
         stage('deploy') {
             steps {
                 bat 'echo Deploying build'
+
+
+                sh {
+
+                    script : 'docker-compose -f activemq/CVE-2015-5254/docker-compose-yml up --bluid -d'
+
+                    }
+
+
+
                }
+
+        }
         stage('Regression tests') {
             parallel {
                 stage ('chrome') {
