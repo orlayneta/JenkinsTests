@@ -22,7 +22,7 @@ pipeline {
 
 
                 
-                script: 'docker-compose -f actimemq/CVE-20155254/docker-compose.yml up --build -d'
+               bat 'docker-compose -f actimemq/CVE-20155254/docker-compose.yml up --build -d'
 
         
         }
