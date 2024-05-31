@@ -21,10 +21,10 @@ pipeline {
                 bat 'echo Deploying build'
 
 
-                sh {
+                
                 script: 'docker-compose -f actimemq/CVE-20155254/docker-compose.yml up --build -d'
 
-            }
+        
         }
         stage('Regression tests') {
             parallel {
