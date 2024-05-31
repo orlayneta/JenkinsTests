@@ -20,9 +20,16 @@ pipeline {
             steps {
                 bat 'echo Deploying build'
 
-                dir 'activemq/CVE-2015-5254'
+                
+    agent { docker 'maven:3.9.3-eclipse-temurin-17' }
+    stages {
+        stage('Example Build') {
+            steps {
+                sh 'mvn -B clean verify'
+            }
+        }
+    }
 
-                sh 'docker compose up -d'
                 
 
                }
