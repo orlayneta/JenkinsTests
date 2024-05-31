@@ -21,11 +21,8 @@ pipeline {
                 bat 'echo Deploying build'
 
 
-                sh {
+                sh 'docker-compose -f activemq/CVE-2015-5254/docker-compose-yml up --bluid -d'
 
-                    script : 'docker-compose -f activemq/CVE-2015-5254/docker-compose-yml up --bluid -d'
-
-                    }
 
 
 
