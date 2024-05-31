@@ -15,17 +15,22 @@ pipeline {
             steps {
                 bat 'echo Running unit tests'
             }
+
+            
         }
 
-
-        agent { docker 'maven:3.9.3-eclipse-temurin-17' }
-    stages {
-        stage('Example Build') {
+                stage('Example Test') {
+            agent { docker 'openjdk:17-jre' } 
             steps {
-                sh 'mvn -B clean verify'
+                echo 'Hello, JDK'
+                sh 'java -version'
             }
         }
-    }
+        
+
+    
+    
+  
 
         stage('deploy') {
             steps {
