@@ -16,12 +16,9 @@ pipeline {
                 bat 'echo Running unit tests'
             }
         }
-        stage('deploy') {
-            steps {
-                bat 'echo Deploying build'
 
-                
-    agent { docker 'maven:3.9.3-eclipse-temurin-17' }
+
+        agent { docker 'maven:3.9.3-eclipse-temurin-17' }
     stages {
         stage('Example Build') {
             steps {
@@ -29,6 +26,13 @@ pipeline {
             }
         }
     }
+
+        stage('deploy') {
+            steps {
+                bat 'echo Deploying build'
+
+                
+    
 
                 
 
