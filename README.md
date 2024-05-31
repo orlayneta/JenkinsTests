@@ -1,82 +1,61 @@
-# Jenkins Tutorials - CI/ CD - DevOps
+# ActiveMQ Deserialization Vulnerability (CVE-2015-5254)
 
-![CI_CD_Journey](/images/journey.png)
+[中文版本(Chinese version)](README.zh-cn.md)
 
-Welcome to my course **Jenkins Pipelines | CI/CD | DevOps**
+Apache ActiveMQ is an open source messaging middleware developed by the American Pachitea (Apache) Software Foundation that supports Java messaging services, clustering, Spring framework, and more.
 
-In this course you'd learn how to create pipelines from scratch. No prior knowledge of Jenkins is required for this course.
+Apache ActiveMQ version 5.x before the 5.13.0 security vulnerability, the vulnerability caused by the program does not limit the classes that can be serialized in the proxy. Remote attacker can make a special serialized Java Message Service (JMS) ObjectMessage objects exploit this vulnerability to execute arbitrary code.
 
-Though, a little knowledge of git/github would be good. I therefore recommend to go though my FREE course on [udemy to learn Git & Github.](https://www.udemy.com/course/gitandgithub/?referralCode=2799194A0FCC520AB4C3)
+Reference Links:
 
+- https://www.blackhat.com/docs/us-16/materials/us-16-Kaiser-Pwning-Your-Java-Messaging-With-Deserialization-Vulnerabilities.pdf
 
-<p align="center">
-<a href="https://www.youtube.com/c/xtremeexcel?sub_confirmation=1"><img src="/images/subscribe.gif" width="30%" height="30%"></a>
-</p>
+## Vulnerability environment
 
+Start the vulnerable environment:
 
-## Content
+```
+docker compose up -d
+```
 
-[Tutorial 1 - Why Devops](001_Why_Devops/README.md)
+After running the environment, it will establish two ports on port 61616 and 8161. Port 61616 is the working port, and messages are delivered on this port. Port 8161 is the webpage management page port. Access `http://your-ip:8161`, You can see the network management page, but this vulnerability does not require a network theoretically.
 
-[Tutorial 2 - Course Introduction](002_Course_Introduction/README.md)
+## Exploit
 
-[Tutorial 3 - Jenkins Installation(Windows)](003_Jenkins_Installation(Windows)/README.md)
+The exploit process is as follows:
 
-[Tutorial 4 - Jenkins Installation(Ubuntu)](004_Jenkins_Installation(Ubuntu)/README.md)
+1. Generate serialized payload (u can using ysoserial)
+2. send payload to port 61616
+3. Access the web management page and read the serialization messages, then u can trigger vulnerability.
 
-[Tutorial 5 - Freestyle vs Pipelines](005_Freestyle_vs_Pipelines/README.md)
+To exploit this environment we will use [jmet](https://github.com/matthiaskaiser/jmet) (Java Message Exploitation Tool). First download the jar file of jmet, and create folder called **external** in the same directory (otherwise it may occur the error that the folder does not exist).
 
-[Tutorial 6 - Declarative vs Scripted](006_Declarative_vs_Scripted/README.md)
+the jmet is to use ysoserial to generate Payload and send it (the jar comes with ysoserial, we don't no need to download it again), so we need to choose one that can be used in ysoserial as the gadget, such as ROME.
 
-[Tutorial 7 - First pipeline using Pipeline script](007_First_pipeline_using_Pipeline_script/README.md)
+Execute:
 
-[Tutorial 8 - Pipeline using SCM](008_Pipeline_using_SCM/README.md)
+```
+java -jar jmet-0.1.0-all.jar -Q event -I ActiveMQ -s -Y "touch /tmp/success" -Yp ROME your-ip 61616
+```
 
-[Tutorial 9 - Post Actions](009_Post_Actions/README.md)
+![](1.png)
 
-[Tutorial 10 - Multiple Stages](010_Multiple_Stages/README.md)
+At this point, a queue named event will be added to the target ActiveMQ.
 
-[Tutorial 11 - Blue Ocean](011_Blue_Ocean/README.md)
+You can visit `http://your-ip:8161/admin/browse.jsp?JMSDestination=Event` to see all messages in this queue.
 
-[Tutorial 12 - Parallel Stages](012_Parallel_Stages/README.md)
+(**login / password:** admin/admin):
 
-[Tutorial 13 - Sequential Stages](013_Sequential_Stages/README.md)
+![](2.png)
 
-[Tutorial 14 - Environment Variables](014_Environment_Variables/README.md)
+Click this message to trigger the command execute, this time into the container `docker compose exec activemq bash`,
 
-[Tutorial 15 - Options Directive](015_Options_Directive/README.md)
+we can see /tmp/success has been successfully created, indicating exploit successful:
 
-[Tutorial 16 - Parameters](016_Parameters/README.md)
+![](3.png)
 
-[Tutorial 17 - When Block](017_When_Block/README.md)
+Replace the command with a reverse shell statement and reuse it:
 
-[Tutorial 18 - Flow Control If Else Try Catch](018_Flow_Control_If_Else_Try_Catch/README.md)
+![](4.png)
 
-[Tutorial 19 - Shared Global Libraries](019_Shared_Global_Libraries/README.md)
-
-[Tutorial 20 - Virtual Machine Agent](020_Virtual_Machine_Agent/README.md)
-
-[Tutorial 21 - Docker Agent](021_Docker_Agent/README.md)
-
-[Tutorial 22 - AWS Agent](022_AWS_Agent/README.md)
-
-
-<p align="center">
-<a href="https://www.youtube.com/c/xtremeexcel?sub_confirmation=1"><img src="/images/subscribe.gif" width="30%" height="30%"></a>
-</p>
-
-
-
-**ABOUT THE AUTHOR**
-
-![Kamal](images/kamal.png)
-
-Kamal Girdher is a Lead automation architect, with rich experience on automation of web, mobile and web service applications. He is a Youtuber, blogger and therefore passionate about teaching thousands of people all over the world.
-
-https://www.youtube.com/c/xtremeExcel
-
-https://www.linkedin.com/in/kamal-girdher-08691932/
-
-http://megettingerror.blogspot.in/
-
-http://exceltalk.blogspot.in/
+It's worth noting that accessing messages through the web administration page and triggering the vulnerability requires administrator privileges. In the absence of password, we can induce administrator visit our link to trigger, or disguised as legitimate messages from other services need to wait for client access when triggered.
