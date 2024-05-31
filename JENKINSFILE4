@@ -19,7 +19,7 @@ pipeline {
             
         }
 
-                stage('Example Test') {
+        stage('Example Test') {
             agent { docker 'openjdk:17-jre' } 
             steps {
                 echo 'Hello, JDK'
