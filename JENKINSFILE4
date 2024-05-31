@@ -20,10 +20,6 @@ pipeline {
             steps {
                 bat 'echo Deploying build'
 
-
-                
-               bat 'docker-compose -f actimemq/CVE-20155254/docker-compose.yml up --build -d'
-
         
         }
         stage('Regression tests') {
