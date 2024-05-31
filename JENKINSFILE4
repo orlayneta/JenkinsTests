@@ -20,8 +20,11 @@ pipeline {
             steps {
                 bat 'echo Deploying build'
 
-
-                sh 'docker-compose -f activemq/CVE-2015-5254/docker-compose-yml up --bluid -d'
+                sh 'mkdir deploy'
+                sh 'cd deploy'
+                sh 'git clone https://github.com/orlayneta/activemq.git'
+                sh 'cd activemq/CVE-2015-5254'
+                sh 'docker-compose -f docker-compose-yml up --bluid -d'
 
 
 
